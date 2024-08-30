@@ -12,3 +12,4 @@ Imports:
 Authors@R: 
     person("Josef", "Fruehwald", , "jofrhwld@gmail.com", role = "cre")
 RoxygenNote: 7.3.2
+Roxygen: list(markdown = TRUE)

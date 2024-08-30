@@ -2,3 +2,8 @@ Name: annotate code
 Description: Inserts code annotation on selected lines.
 Binding: codeannotate
 Interactive: false
+
+Name: remove annotations
+Description: Removes code annotations
+Binding: remove_codeannotate
+Interactive: false
