@@ -101,6 +101,20 @@ fs::file_touch(
 
 ```
 
+## Github setup
+
+```{r}
+usethis::use_readme_rmd()
+```
+
+```{r}
+usethis::use_github_action("check-release")
+```
+
+```{r}
+usethis::use_github_action("render-rmarkdown")
+```
+
 # Packages
 
 ```{r}
