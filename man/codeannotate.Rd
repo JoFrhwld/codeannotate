@@ -13,6 +13,8 @@ Add code annotation markup to a code chunk in a quarto document.
 After installing this RStudio addin, when lines of code are selected,
 the markup for \href{https://quarto.org/docs/authoring/code-annotation.html}{quarto code annotations}
 will be added.
+
+Setting up a custom keybinding is recommended.
 }
 \seealso{
 \code{\link[=remove_codeannotate]{remove_codeannotate()}}

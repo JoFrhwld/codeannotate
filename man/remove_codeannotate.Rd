@@ -2,10 +2,19 @@
 % Please edit documentation in R/codeannotate.R
 \name{remove_codeannotate}
 \alias{remove_codeannotate}
-\title{Remove code annotation}
+\title{Remove Code Annotation}
 \usage{
 remove_codeannotate()
 }
 \description{
-Remove code annotation
+Remove code annotation markup.
+}
+\details{
+If a selected line of code has quarto code annotation markup, this
+will remove it.
+
+Setting up a custom keybinding is recommended.
+}
+\seealso{
+\code{\link[=codeannotate]{codeannotate()}}
 }
