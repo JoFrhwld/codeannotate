@@ -1,20 +1,8 @@
 #' Code Annotate
 #' @export
 codeannotate <- function(){
-  context <- rstudioapi::getSourceEditorContext()
 
-  if(length(context$selection) < 1){
-    return()
-  }
-
-  selection <- context |>
-    rstudioapi::primary_selection()
-
-  expand_selection(selection)
-
-  context <- rstudioapi::getSourceEditorContext()
-  selection <- context |>
-    rstudioapi::primary_selection()
+  selection <- get_selection()
 
   beginning <- selection$range$start
   ending <- selection$range$end
@@ -64,6 +52,25 @@ codeannotate <- function(){
 }
 
 
+
+get_selection <- function(){
+  context <- rstudioapi::getSourceEditorContext()
+
+  if(length(context$selection) < 1){
+    return()
+  }
+
+  selection <- context |>
+    rstudioapi::primary_selection()
+
+  expand_selection(selection)
+
+  context <- rstudioapi::getSourceEditorContext()
+  selection <- context |>
+    rstudioapi::primary_selection()
+
+  return(selection)
+}
 
 expand_selection <- function(selection){
 
