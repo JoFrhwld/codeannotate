@@ -1,0 +1,4 @@
+Name: annotate code
+Description: Inserts code annotation on selected lines.
+Binding: codeannotate
+Interactive: false

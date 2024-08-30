@@ -41,6 +41,8 @@ desc::desc_set(
 usethis::use_gpl3_license()
 ```
 
+## Infra
+
 ```{r}
 renv::install("roxygen2")
 renv::install("here")
@@ -48,6 +50,55 @@ renv::install("here")
 
 ```{r}
 fs::file_delete(here::here("NAMESPACE"))
+```
+
+## Addin register
+
+```{r}
+renv::install("readr")
+```
+
+```{r}
+fs::dir_create(
+  here::here(
+    "inst",
+    "rstudio"
+  ),
+  recurse = T
+)
+
+readr::write_lines(
+  c(
+    "Name: annotate code",
+    "Description: Inserts code annotation on selected lines.",
+    "Binding: codeannotate",
+    "Interactive: false"
+  ),
+  file = here::here(
+    "inst",
+    "rstudio",
+    "addins.dcf"
+  )
+)
+```
+
+## Code Setup
+
+```{r}
+fs::file_delete(
+  here::here(
+    "R",
+    "hello.R"
+  )
+)
+
+fs::file_touch(
+  here::here(
+    "R",
+    "codeannotate.R"
+  )
+)
+
 ```
 
 # Packages
