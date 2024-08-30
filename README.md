@@ -42,4 +42,4 @@ addin, code annotation markup will be added to the code chunk. By
 selecting some lines of code and triggering the `remove_codeannotate`
 addin, the markup will be removed.
 
-![](assets/code_annotate.gif)
+![](man/figures/code_annotate.gif)
