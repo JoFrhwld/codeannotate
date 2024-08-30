@@ -1,0 +1,12 @@
+Package: codeannotate
+Type: Package
+Title: RStudio plugin to add code annotation
+Version: 0.1.0
+Description: RStudio plugin to add code annotation.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    rstudioapi
+Authors@R: 
+    person("Josef", "Fruehwald", , "jofrhwld@gmail.com", role = "cre")

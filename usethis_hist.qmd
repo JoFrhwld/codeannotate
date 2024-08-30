@@ -1,0 +1,48 @@
+---
+title: "usethis hist"
+format: html
+editor: visual
+knitr: 
+  opts_chunk: 
+    eval: false
+---
+
+# Initial Setup
+
+```{r}
+renv::install("usethis")
+```
+
+## Description
+
+```{r}
+desc::desc_set_authors(
+  person(
+    given = "Josef",
+    family = "Fruehwald",
+    email = "jofrhwld@gmail.com",
+    role = "cre"
+  )
+)
+```
+
+```{r}
+desc::desc_del("Author")
+desc::desc_del("Maintainer")
+```
+
+```{r}
+desc::desc_set(
+  Title = "RStudio plugin to add code annotation"
+)
+```
+
+```{r}
+usethis::use_gpl3_license()
+```
+
+# Packages
+
+```{r}
+usethis::use_package("rstudioapi")
+```
