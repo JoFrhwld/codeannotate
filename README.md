@@ -6,9 +6,11 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/JoFrhwld/codeannotate/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JoFrhwld/codeannotate/actions/workflows/R-CMD-check.yaml)
+
 <!-- badges: end -->
 
-The goal of codeannotate is to …
+The goal of codeannotate is to provide a quick way to add or remove
+quarto code annotation markup to a code chunk.
 
 ## Installation
 
@@ -22,28 +24,22 @@ pak::pak("JoFrhwld/codeannotate")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+The quarto documentation provides the following example of code to
+annotate.
 
 ``` r
-library(codeannotate)
-## basic example code
+library(tidyverse)
+library(palmerpenguins)
+penguins |>
+  mutate(
+    bill_ratio = bill_depth_mm / bill_length_mm,
+    bill_area  = bill_depth_mm * bill_length_mm
+  )
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+By selecting some lines of code, and triggering the `codeannotate`
+addin, code annotation markup will be added to the code chunk. By
+selecting some lines of code and triggering the `remove_codeannotate`
+addin, the markup will be removed.
 
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
+![](assets/code_annotate.gif)
