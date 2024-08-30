@@ -7,7 +7,8 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    rstudioapi
+    rstudioapi,
+    stringr
 Authors@R: 
     person("Josef", "Fruehwald", , "jofrhwld@gmail.com", role = "cre")
 RoxygenNote: 7.3.2
