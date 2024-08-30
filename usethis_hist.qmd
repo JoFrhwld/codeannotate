@@ -41,6 +41,15 @@ desc::desc_set(
 usethis::use_gpl3_license()
 ```
 
+```{r}
+renv::install("roxygen2")
+renv::install("here")
+```
+
+```{r}
+fs::file_delete(here::here("NAMESPACE"))
+```
+
 # Packages
 
 ```{r}

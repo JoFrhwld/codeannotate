@@ -10,3 +10,4 @@ Imports:
     rstudioapi
 Authors@R: 
     person("Josef", "Fruehwald", , "jofrhwld@gmail.com", role = "cre")
+RoxygenNote: 7.3.2
