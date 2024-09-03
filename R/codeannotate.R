@@ -209,7 +209,7 @@ remove_annotaton <- function(chunk){
 
   chunk$chunk_tibble |>
     dplyr::mutate(
-      annotation = case_when(
+      annotation = dplyr::case_when(
         rown >= beginning & rown <= ending ~ NA_character_,
         .default = annotation
       )
