@@ -168,7 +168,7 @@ new_line_annotation <- function(chunk){
   chunk$chunk_tibble |>
     dplyr::filter(
       !is.na(
-        chunk$chunk_tibble$annotation
+        annotation
       )
     ) |>
     dplyr::mutate(
@@ -185,17 +185,23 @@ new_line_annotation <- function(chunk){
       lines = stringr::str_glue(
         "{lines}{padding}{annotation}"
       )
-    ) |>
-    dplyr::bind_rows(
-      chunk$chunk_tibble |>
-        filter(
-          is.na(chunk$chunk_tibble$annotation)
-        )
-    ) |>
-    dplyr::arrange(rown) ->
+    ) ->
+    annotation_rows
+
+  chunk$chunk_tibble |>
+    dplyr::filter(
+      is.na(annotation)
+    )->
+    blank_rows
+
+  dplyr::bind_rows(
+    annotation_rows,
+    blank_rows
+  ) |>
+    dplyr::arrange(rown) ->                                                                          #<1>
     chunk$chunk_tibble
 
-  return(chunk)
+  return(chunk)                                                                                      #<2>
 }
 
 remove_annotaton <- function(chunk){
