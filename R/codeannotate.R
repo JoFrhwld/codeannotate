@@ -86,7 +86,7 @@ write_chunk <- function(chunk){
 get_existing_annotation <- function(chunk){
   chunk$chunk_tibble |>
     dplyr::mutate(
-      annotation = str_extract(
+      annotation = stringr::str_extract(
         lines,
         "#<\\d+>\\s*?$"
       )
