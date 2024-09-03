@@ -21,13 +21,12 @@ codeannotate <- function(){
     return()
   }
 
-  chunk |>
-    get_existing_annotation() |>
-    insert_new_annotation() |>
-    renumber_annotation() |>
-    sanitize_rows() |>
-    new_line_annotation() ->
-    chunk
+  chunk <- get_existing_annotation(chunk)
+  chunk <- insert_new_annotation(chunk)
+  chunk <- renumber_annotation(chunk)
+  chunk <- sanitize_rows(chunk)
+  chunk <- new_line_annotation(chunk)
+  chunk
 
   write_chunk(chunk)
 
@@ -57,13 +56,11 @@ remove_codeannotate <- function(){
     return()
   }
 
-  chunk |>
-    get_existing_annotation()|>
-    remove_annotaton()|>
-    renumber_annotation() |>
-    sanitize_rows() |>
-    new_line_annotation() ->
-    chunk
+  chunk <- get_existing_annotation(chunk)
+  chunk <- remove_annotaton(chunk)
+  chunk <- renumber_annotation(chunk)
+  chunk <- sanitize_rows(chunk)
+  chunk <- new_line_annotation(chunk)
 
   write_chunk(chunk)
 
