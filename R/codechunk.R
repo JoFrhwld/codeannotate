@@ -52,7 +52,7 @@ codechunk <- R6::R6Class(
       beginning <- selection$range$start["row"]
       ending <- selection$range$end["row"]
 
-      selection_range <- document_range(
+      selection_range <- rstudioapi::document_range(
         start = c(beginning, 0),
         end = c(ending, Inf)
       )
@@ -103,7 +103,7 @@ codechunk <- R6::R6Class(
         ][1] - 1
       }
 
-      chunk_range = document_range(
+      chunk_range = rstudioapi::document_range(
         start = c(chunk_start, 0),
         end = c(chunk_end, Inf)
       )
