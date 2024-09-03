@@ -120,3 +120,7 @@ usethis::use_github_action("render-rmarkdown")
 ```{r}
 usethis::use_package("rstudioapi")
 ```
+
+```{r}
+usethis::use_package("R6")
+```
