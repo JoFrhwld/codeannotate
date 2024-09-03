@@ -1,7 +1,7 @@
 Package: codeannotate
 Type: Package
 Title: RStudio plugin to add code annotation
-Version: 0.2.4
+Version: 0.2.5
 Description: RStudio plugin to add code annotation.
 License: GPL (>= 3)
 Encoding: UTF-8
