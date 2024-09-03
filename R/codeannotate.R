@@ -189,7 +189,7 @@ new_line_annotation <- function(chunk){
     dplyr::bind_rows(
       chunk$chunk_tibble |>
         filter(
-          is.na(annotation)
+          is.na(chunk$chunk_tibble$annotation)
         )
     ) |>
     dplyr::arrange(rown) ->
