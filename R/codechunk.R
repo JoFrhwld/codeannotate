@@ -1,5 +1,3 @@
-#' codechunk class
-#' @export
 codechunk <- R6::R6Class(
   classname = "codechunk",
 
@@ -8,10 +6,13 @@ codechunk <- R6::R6Class(
     chunk = FALSE,
     context = "",
     selection = "",
+    original_range = "",
+    selection_range = "",
     selection_lines = "",
     document_lines = "",
     chunk_lines = "",
     chunk_range = "",
+    chunk_tibble = "",
 
     initialize = function(){
       self$context <- rstudioapi::getSourceEditorContext()
@@ -21,19 +22,29 @@ codechunk <- R6::R6Class(
         return()
       }
 
-      self$selection <- primary_selection(self$context)
-
-      self$selection_lines <- private$get_selection_lines()
+      self$selection <- rstudioapi::primary_selection(self$context)
+      self$original_range <- self$selection$range
       self$document_lines <- self$context$contents
+
+      self$selection_range <- private$get_selection_range()
+      self$selection_lines <- private$get_selection_lines()
 
       self$chunk_range <- private$get_chunk_range()
       self$chunk_lines <- private$get_chunk_lines()
 
+      self$chunk_tibble <- tibble::tibble(
+        lines = self$chunk_lines,
+        rown = seq(
+          self$chunk_range$start["row"],
+          self$chunk_range$end["row"]
+        )
+      )
     }
   ),
 
   private = list(
-    get_selection_lines = function(){
+
+    get_selection_range = function(){
       selection <- rstudioapi::primary_selection(
         self$context
       )
@@ -41,9 +52,19 @@ codechunk <- R6::R6Class(
       beginning <- selection$range$start["row"]
       ending <- selection$range$end["row"]
 
+      selection_range <- document_range(
+        start = c(beginning, 0),
+        end = c(ending, Inf)
+      )
+      return(selection_range)
+    },
+
+    get_selection_lines = function(){
+
+      beginning <-self$selection_range$start["row"]
+      ending <- self$selection_range$end["row"]
+
       return(self$context$contents[beginning:ending])
-
-
     },
 
     get_chunk_range = function(){
@@ -100,8 +121,3 @@ codechunk <- R6::R6Class(
   )
 )
 
-#' make code chunk
-#' @export
-make_code_chunk <- function(){
-  chunk <<- codechunk$new()
-}

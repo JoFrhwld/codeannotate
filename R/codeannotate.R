@@ -15,48 +15,21 @@
 #' @export
 codeannotate <- function(){
 
-  selection <- get_selection()
+  chunk <- codechunk$new()
 
-  beginning <- selection$range$start
-  ending <- selection$range$end
-
-  code_lines <- get_code_lines(selection)
-
-  code_lengths <- nchar(code_lines)
-  longest <- max(code_lengths)
-
-  nspaces <- (longest - code_lengths)+3
-
-  spaces <- lapply(
-    nspaces,
-    \(x) rep(" ", x) |> stringr::str_flatten()
-  ) |>
-    unlist()
-
-  new_code_lines <- code_lines
-
-  for(i in seq_along(code_lines)){
-    new_code_lines[i] <- stringr::str_glue(
-      "{code_lines[i]}{spaces[i]}# <{i}>"
-    )
+  if(length(chunk$context$selection) < 1){
+    return()
   }
 
-  ranges <- lapply(
-    seq(
-      beginning["row"],
-      ending["row"]
-    ),
-    \(x) rstudioapi::document_range(
-      start = c(x,1),
-      end = c(x, Inf)
-    )
-  )
+  chunk |>
+    get_existing_annotation() |>
+    insert_new_annotation() |>
+    renumber_annotation() |>
+    sanitize_rows() |>
+    new_line_annotation() ->
+    chunk
 
-  rstudioapi::modifyRange(
-    location = ranges,
-    text = new_code_lines
-  )
-
+  write_chunk(chunk)
 
 }
 
@@ -76,75 +49,169 @@ codeannotate <- function(){
 #'
 #' @export
 remove_codeannotate <- function(){
-  selection <- get_selection()
-  beginning <- selection$range$start
-  ending <- selection$range$end
-
-  code_lines <- get_code_lines(selection)
-
-  ranges <- lapply(
-    seq(
-      beginning["row"],
-      ending["row"]
-    ),
-    \(x) rstudioapi::document_range(
-      start = c(x,1),
-      end = c(x, Inf)
-    )
-  )
-
-  rstudioapi::modifyRange(
-    location = ranges,
-    text = code_lines
-  )
-}
 
 
-get_selection <- function(){
-  context <- rstudioapi::getSourceEditorContext()
+  chunk <- codechunk$new()
 
-  if(length(context$selection) < 1){
+  if(length(chunk$context$selection) < 1){
     return()
   }
 
-  selection <- context |>
-    rstudioapi::primary_selection()
+  chunk |>
+    get_existing_annotation() |>
+    remove_annotaton() |>
+    renumber_annotation() |>
+    sanitize_rows() |>
+    new_line_annotation() ->
+    chunk
 
-  expand_selection(selection)
-
-  context <- rstudioapi::getSourceEditorContext()
-  selection <- context |>
-    rstudioapi::primary_selection()
-
-  return(selection)
-}
-
-get_code_lines <- function(selection){
-
-  selection$text |>
-    stringr::str_split("\\n", simplify = T) |>
-    stringr::str_remove("#\\s*<\\d+>$") |>
-    stringr::str_trim("right") ->
-    code_lines
-
-  return(code_lines)
+  write_chunk(chunk)
 
 }
 
-expand_selection <- function(selection){
-
-  rstudioapi::setSelectionRanges(
-    rstudioapi::document_range(
-      start = c(
-        selection$range$start["row"],
-        0
-      ),
-      end = c(
-        selection$range$end["row"],
-        Inf
-      )
+write_chunk <- function(chunk){
+  rstudioapi::modifyRange(
+    chunk$chunk_range,
+    stringr::str_flatten(
+      chunk$chunk_tibble$lines,
+      collapse = "\n"
     )
   )
+
+  rstudioapi::setSelectionRanges(
+    chunk$original_range
+  )
+}
+
+get_existing_annotation <- function(chunk){
+  chunk$chunk_tibble |>
+    dplyr::mutate(
+      annotation = str_extract(
+        lines,
+        "#<\\d+>\\s*?$"
+      )
+    ) ->
+    chunk$chunk_tibble
+
+  return(chunk)
+}
+
+insert_new_annotation <- function(chunk){
+  beginning <- chunk$selection_range$start["row"]
+  ending <- chunk$selection_range$end["row"]
+
+  chunk$chunk_tibble |>
+    dplyr::mutate(
+      annotation = dplyr::case_when(
+        rown >= beginning & rown <= ending ~ "NEW",
+        .default = annotation
+      )
+    )->
+    chunk$chunk_tibble
+  return(chunk)
+}
+
+renumber_annotation <- function(chunk){
+  chunk$chunk_tibble |>
+    dplyr::filter(
+      !is.na(annotation)
+    ) |>
+    dplyr::select(
+      rown, annotation
+    ) |>
+    dplyr::mutate(
+      annotation = dplyr::consecutive_id(annotation),
+      annotation = stringr::str_glue("#<{annotation}>")
+    ) ->
+    annotation_rows
+
+  chunk$chunk_tibble |>
+    dplyr::select(
+      -annotation
+    ) |>
+    dplyr::left_join(
+      annotation_rows,
+      by = "rown"
+    )->
+    chunk$chunk_tibble
+  return(chunk)
+}
+
+sanitize_rows <- function(chunk){
+
+  chunk$chunk_tibble |>
+    dplyr::mutate(
+      lines = stringr::str_remove(
+        lines,
+        "#<\\d+>\\s*?$"
+      ) |>
+        stringr::str_trim(side = "right")
+    ) ->
+    chunk$chunk_tibble
+
+  return(chunk)
+}
+
+new_line_annotation <- function(chunk){
+
+  chunk$chunk_tibble |>
+    # dplyr::filter(
+    #   !is.na(annotation)
+    # ) |>
+    dplyr::pull(lines) |>
+    nchar() |>
+    max() ->
+    longest
+
+  if(!any(!is.na(chunk$chunk_tibble$annotation))){
+    return(chunk)
+  }
+
+  chunk$chunk_tibble |>
+    dplyr::filter(
+      !is.na(annotation)
+    ) |>
+    dplyr::mutate(
+      nspaces = (longest - nchar(lines))  + 2,
+    ) |>
+    dplyr::rowwise() |>
+    dplyr::mutate(
+      padding = stringr::str_flatten(
+        rep(" ", nspaces)
+      )
+    ) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(
+      lines = stringr::str_glue(
+        "{lines}{padding}{annotation}"
+      )
+    ) |>
+    dplyr::bind_rows(
+      chunk$chunk_tibble |>
+        filter(
+          is.na(annotation)
+        )
+    ) |>
+    dplyr::arrange(rown) ->
+    chunk$chunk_tibble
+
+  return(chunk)
+}
+
+remove_annotaton <- function(chunk){
+  beginning <- chunk$selection_range$start["row"]
+  ending <- chunk$selection_range$end["row"]
+
+  chunk$chunk_tibble |>
+    dplyr::mutate(
+      annotation = case_when(
+        rown >= beginning & rown <= ending ~ NA,
+        .default = annotation
+      )
+    ) ->
+    chunk$chunk_tibble
+
+  return(chunk)
 
 }
 
