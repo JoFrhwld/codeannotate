@@ -26,7 +26,6 @@ codeannotate <- function(){
   chunk <- renumber_annotation(chunk)
   chunk <- sanitize_rows(chunk)
   chunk <- new_line_annotation(chunk)
-  chunk
 
   write_chunk(chunk)
 
@@ -157,9 +156,6 @@ sanitize_rows <- function(chunk){
 new_line_annotation <- function(chunk){
 
   chunk$chunk_tibble |>
-    # dplyr::filter(
-    #   !is.na(annotation)
-    # ) |>
     dplyr::pull(lines) |>
     nchar() |>
     max() ->
@@ -171,7 +167,9 @@ new_line_annotation <- function(chunk){
 
   chunk$chunk_tibble |>
     dplyr::filter(
-      !is.na(annotation)
+      !is.na(
+        chunk$chunk_tibble$annotation
+      )
     ) |>
     dplyr::mutate(
       nspaces = (longest - nchar(lines))  + 2,
