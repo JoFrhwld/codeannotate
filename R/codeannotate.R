@@ -58,8 +58,8 @@ remove_codeannotate <- function(){
   }
 
   chunk |>
-    get_existing_annotation() |>
-    remove_annotaton() |>
+    get_existing_annotation()|>
+    remove_annotaton()|>
     renumber_annotation() |>
     sanitize_rows() |>
     new_line_annotation() ->
@@ -112,16 +112,20 @@ insert_new_annotation <- function(chunk){
 }
 
 renumber_annotation <- function(chunk){
+
   chunk$chunk_tibble |>
+    dplyr::mutate(
+      group_id = dplyr::consecutive_id(annotation)
+    ) |>
     dplyr::filter(
       !is.na(annotation)
     ) |>
+    dplyr::mutate(
+      annotation = dplyr::consecutive_id(group_id),
+      annotation = stringr::str_glue("#<{annotation}>")
+    )   |>
     dplyr::select(
       rown, annotation
-    ) |>
-    dplyr::mutate(
-      annotation = dplyr::consecutive_id(annotation),
-      annotation = stringr::str_glue("#<{annotation}>")
     ) ->
     annotation_rows
 
@@ -134,6 +138,7 @@ renumber_annotation <- function(chunk){
       by = "rown"
     )->
     chunk$chunk_tibble
+
   return(chunk)
 }
 
@@ -205,7 +210,7 @@ remove_annotaton <- function(chunk){
   chunk$chunk_tibble |>
     dplyr::mutate(
       annotation = case_when(
-        rown >= beginning & rown <= ending ~ NA,
+        rown >= beginning & rown <= ending ~ NA_character_,
         .default = annotation
       )
     ) ->
